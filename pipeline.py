@@ -56,6 +56,6 @@ def first_pipeline(gamma: float = 0.002):
 
 if __name__ == "__main__":
     first_pipeline = first_pipeline.with_options(
-        run_name="new_pipeline_run_{{date}}_{{time}}"
+        run_name="new_pipeline_run_1_{{date}}_{{time}}", enable_cache=False
         )
     first_pipeline(gamma=0.0015)
