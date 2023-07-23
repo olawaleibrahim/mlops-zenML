@@ -48,6 +48,29 @@ def svc_trainer(
     return model, train_acc
 
 
+@step
+def digits_data_loader() -> Tuple[
+    Annotated[pd.DataFrame, "X_train"],
+    Annotated[pd.DataFrame, "X_test"],
+    Annotated[pd.Series, "y_train"],
+    Annotated[pd.Series, "y_test"],
+]:
+    """Loads the digits dataset and splits it into train and test data."""
+    # Load data from the digits dataset
+    digits = load_digits(as_frame=True)
+    # Split into datasets
+    X_train, X_test, y_train, y_test = train_test_split(
+        digits.data, digits.target, test_size=0.2, shuffle=True
+    )
+    return X_train, X_test, y_train, y_test
+
+
+@pipeline
+def first_pipeline(gamma: float = 0.002):
+    X_train, X_test, y_train, y_test = digits_data_loader()
+    svc_trainer(gamma=gamma, X_train=X_train, y_train=y_train)
+
+
 @pipeline
 def first_pipeline(gamma: float = 0.002):
     X_train, X_test, y_train, y_test = training_data_loader()
@@ -55,7 +78,5 @@ def first_pipeline(gamma: float = 0.002):
 
 
 if __name__ == "__main__":
-    first_pipeline = first_pipeline.with_options(
-        run_name="new_pipeline_run_1_{{date}}_{{time}}", enable_cache=False
-        )
-    first_pipeline(gamma=0.0015)
+    first_pipeline = first_pipeline.with_options( enable_cache=False)
+    first_pipeline()
